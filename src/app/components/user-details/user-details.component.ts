@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 
@@ -11,6 +11,17 @@ export class UserDetailsComponent implements OnInit {
   isSaved = false;
   userDetailsForm: FormGroup;
 
+  
+  @HostListener('window:beforeunload', ['$event'])
+  public onBeforeUnload(event: BeforeUnloadEvent): void {
+    this.isAllowedNavigation(true).subscribe(isAllowedNavigation => {
+      if (event && !isAllowedNavigation) {
+        event.preventDefault();
+        event.returnValue = false;
+      }
+    });
+  }
+
   constructor() {
     this.userDetailsForm = new FormGroup({
       name: new FormControl(''),
@@ -22,7 +33,11 @@ export class UserDetailsComponent implements OnInit {
   }
 
   canDeactivate(): Observable<boolean> {
-    if (!this.isSaved) {
+    return this.isAllowedNavigation();
+  }
+
+  private isAllowedNavigation(beforeunloadEvent = false): Observable<boolean> {
+    if (!this.isSaved || beforeunloadEvent) {
       const result = window.confirm('There are unsaved changes! Are you sure?');
       return of(result);
     }
