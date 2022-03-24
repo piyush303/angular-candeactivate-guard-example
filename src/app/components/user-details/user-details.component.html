@@ -1,0 +1,16 @@
+<h2>User Details</h2>
+<form [formGroup]="userDetailsForm" novalidate (submit)="onSubmit()">
+	<div>
+		<label>Name</label>
+		<input type="text" [formControlName]="'name'" />
+	</div>
+
+	<div>
+		<label>Email</label>
+		<input type="email" [formControlName]="'email'" />
+	</div>
+
+	<div>
+		<input type="submit" value="Submit" />
+	</div>
+</form>
